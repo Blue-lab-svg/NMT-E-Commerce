@@ -1,0 +1,12 @@
+numpy
+pandas
+scikit-learn
+torch
+transformers
+accelerate
+bitsandbytes
+peft
+sacrebleu
+fastapi
+uvicorn
+pytest

@@ -1,0 +1,29 @@
+Metadata-Version: 2.4
+Name: lemt
+Version: 0.1.0
+Summary: LEMT - Language E-commerce Machine Translation pipeline
+Home-page: https://github.com/Blue-lab-svg/LEMT
+Author: Blue Lab
+Author-email: info@bluelab.com
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: scikit-learn
+Requires-Dist: torch
+Requires-Dist: transformers
+Requires-Dist: accelerate
+Requires-Dist: bitsandbytes
+Requires-Dist: peft
+Requires-Dist: sacrebleu
+Requires-Dist: fastapi
+Requires-Dist: uvicorn
+Requires-Dist: pytest
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

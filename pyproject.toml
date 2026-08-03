@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lemt"
+version = "0.1.0"
+description = "LEMT - Language E-commerce Machine Translation pipeline"
+authors = [
+    { name = "Blue Lab", email = "info@bluelab.com" }
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "torch",
+    "transformers",
+    "accelerate",
+    "bitsandbytes",
+    "peft",
+    "sacrebleu",
+    "fastapi",
+    "uvicorn",
+    "pytest",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.poetry]
+name = "lemt"
+version = "0.1.0"
+description = "LEMT - Language E-commerce Machine Translation pipeline"
+authors = ["Blue Lab <info@bluelab.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+numpy = "*"
+pandas = "*"
+scikit-learn = "*"
+torch = "*"
+transformers = "*"
+accelerate = "*"
+bitsandbytes = "*"
+peft = "*"
+sacrebleu = "*"
+fastapi = "*"
+uvicorn = "*"
+pytest = "*"
+
+[tool.poetry.dev-dependencies]
+black = "*"
+flake8 = "*"
+mypy = "*"
