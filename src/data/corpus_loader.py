@@ -23,6 +23,7 @@ class CorpusLoader:
 
     @staticmethod
     def _normalize_text(text: Any) -> str:
+        """Normalize text: Unicode cleanup, collapse spaces, strip punctuation, lowercase."""
         if not isinstance(text, str):
             text = str(text) if text is not None else ""
         text = unicodedata.normalize("NFKC", text)
@@ -31,6 +32,10 @@ class CorpusLoader:
         return text.lower().strip()
 
     def load_parallel_corpus(self, filename: str = "clean_parallel_corpora.csv") -> pd.DataFrame:
+        """
+        Load parallel corpus from processed CSV.
+        Verifies required columns, drops missing values, normalizes text, and returns cleaned DataFrame.
+        """
         file_path: Path = self.data_dir / filename
         if not file_path.exists():
             raise FileNotFoundError(f"Parallel corpus file not found: {file_path}")
@@ -38,15 +43,24 @@ class CorpusLoader:
         df = pd.read_csv(file_path)
         logging.info("Loaded parallel corpus with columns: %s", list(df.columns))
 
-        required_cols = {"source_text", "target_text"}
+        # Required schema
+        required_cols = {"id", "source_language", "target_language",
+                         "source_text", "target_text", "split"}
         if not required_cols.issubset(set(df.columns)):
-            raise ValueError("Parallel corpus missing expected columns")
+            raise ValueError(
+                f"Parallel corpus missing expected columns. Found: {list(df.columns)}"
+            )
 
+        # Drop rows with missing source/target text
         df = df.dropna(subset=["source_text", "target_text"]).copy()
+
+        # Normalize source and target text
         df["source_text"] = df["source_text"].astype(str).apply(self._normalize_text)
         df["target_text"] = df["target_text"].astype(str).apply(self._normalize_text)
 
-        return df[["source_text", "target_text"]]
+        # Return cleaned DataFrame with all required columns
+        return df[["id", "source_language", "target_language",
+                   "source_text", "target_text", "split"]]
 
     def load_term_pairs(self, filename: str = "clean_term_pairs.csv") -> pd.DataFrame:
         """Load integrated term pairs for domain-specific vocabulary."""
@@ -57,7 +71,6 @@ class CorpusLoader:
         df = pd.read_csv(file_path)
         logging.info("Loaded term pairs with columns: %s", list(df.columns))
 
-        # Normalize all language columns
         for col in df.columns:
             df[col] = df[col].astype(str).apply(self._normalize_text)
 
@@ -79,3 +92,4 @@ if __name__ == "__main__":
 
     print("\nTerm pairs sample:")
     print(corpora["terms"].head())
+ 
