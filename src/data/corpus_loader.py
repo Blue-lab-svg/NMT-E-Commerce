@@ -33,34 +33,32 @@ class CorpusLoader:
 
     def load_parallel_corpus(self, filename: str = "clean_parallel_corpora.csv") -> pd.DataFrame:
         """
-        Load parallel corpus from processed CSV.
-        Verifies required columns, drops missing values, normalizes text, and returns cleaned DataFrame.
+        Load parallel corpus or terminology slice from processed CSV.
+        - For full corpora: requires id, source_language, target_language, source_text, target_text, split.
+        - For terminology slices: requires source_text, target_text only.
         """
         file_path: Path = self.data_dir / filename
         if not file_path.exists():
             raise FileNotFoundError(f"Parallel corpus file not found: {file_path}")
 
         df = pd.read_csv(file_path)
-        logging.info("Loaded parallel corpus with columns: %s", list(df.columns))
+        logging.info("Loaded corpus with columns: %s", list(df.columns))
 
-        # Required schema
-        required_cols = {"id", "source_language", "target_language",
-                         "source_text", "target_text", "split"}
-        if not required_cols.issubset(set(df.columns)):
-            raise ValueError(
-                f"Parallel corpus missing expected columns. Found: {list(df.columns)}"
-            )
-
-        # Drop rows with missing source/target text
-        df = df.dropna(subset=["source_text", "target_text"]).copy()
-
-        # Normalize source and target text
-        df["source_text"] = df["source_text"].astype(str).apply(self._normalize_text)
-        df["target_text"] = df["target_text"].astype(str).apply(self._normalize_text)
-
-        # Return cleaned DataFrame with all required columns
-        return df[["id", "source_language", "target_language",
-                   "source_text", "target_text", "split"]]
+        if {"id", "source_language", "target_language", "source_text", "target_text", "split"}.issubset(df.columns):
+            # Full parallel corpus
+            df = df.dropna(subset=["source_text", "target_text"]).copy()
+            df["source_text"] = df["source_text"].astype(str).apply(self._normalize_text)
+            df["target_text"] = df["target_text"].astype(str).apply(self._normalize_text)
+            return df[["id", "source_language", "target_language",
+                       "source_text", "target_text", "split"]]
+        elif {"source_text", "target_text"}.issubset(df.columns):
+            # Terminology slice
+            df = df.dropna(subset=["source_text", "target_text"]).copy()
+            df["source_text"] = df["source_text"].astype(str).apply(self._normalize_text)
+            df["target_text"] = df["target_text"].astype(str).apply(self._normalize_text)
+            return df[["source_text", "target_text"]]
+        else:
+            raise ValueError(f"Corpus file missing expected columns. Found: {list(df.columns)}")
 
     def load_term_pairs(self, filename: str = "clean_term_pairs.csv") -> pd.DataFrame:
         """Load integrated term pairs for domain-specific vocabulary."""
@@ -92,4 +90,3 @@ if __name__ == "__main__":
 
     print("\nTerm pairs sample:")
     print(corpora["terms"].head())
- 
